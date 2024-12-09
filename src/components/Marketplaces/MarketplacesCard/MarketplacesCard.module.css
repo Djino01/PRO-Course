@@ -1,0 +1,103 @@
+.card {
+	border: 1px solid rgba(0, 0, 0, 0.12);
+	border-radius: 4px;
+	padding: 24px;
+	background-color: #fff;
+	display: flex;
+	align-content: space-between;
+	flex-wrap: wrap;
+	gap: 16px;
+}
+
+.card-top,
+.card-bottom {
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+}
+
+.top {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+}
+
+.img {
+	border-radius: 12px;
+	width: 64px;
+	height: 64px;
+	mix-blend-mode: luminosity;
+	overflow: hidden;
+}
+.img img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.top-info {
+	font-weight: 700;
+	font-size: 14px;
+	line-height: 1.2;
+	color: #000;
+	flex: 1;
+}
+
+.name {
+	font-weight: 400;
+	color: rgba(0, 0, 0, 0.4);
+	margin-top: 8px;
+}
+
+.services {
+	border-radius: 12px;
+	padding: 12px;
+	background: rgba(0, 0, 0, 0.02);
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.services-items {
+	font-weight: 400;
+	font-size: 12px;
+	line-height: 140%;
+	color: rgba(0, 0, 0, 0.4);
+	position: relative;
+	padding-left: 12px;
+}
+.services-items::before {
+	content: "";
+	position: absolute;
+	border-radius: 100px;
+	width: 4px;
+	height: 4px;
+	background-color: #d9d9d9;
+	top: 6.5px;
+	left: 0;
+}
+
+.card-move {
+	font-weight: 400;
+	font-size: 12px;
+	line-height: 140%;
+	color: #000;
+}
+.card-move span {
+	text-decoration: underline;
+}
+.price {
+	font-weight: 700;
+	font-size: 20px;
+	line-height: 120%;
+	color: #000;
+}
+
+.btn {
+	width: 100%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+}
