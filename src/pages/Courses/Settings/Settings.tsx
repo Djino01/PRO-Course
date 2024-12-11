@@ -35,7 +35,6 @@ export function Settings() {
 	const [isCreatingLesson, setIsCreatingLesson] = useState(false);
 	const [isEditingLesson, setIsEditingLesson] = useState(false);
 	const [editingLesson, setEditingLesson] = useState<Lesson | null>(null);
-	const userRole = localStorage.getItem('role');
 
 	useEffect(() => {
 		if (courseData) {
@@ -99,27 +98,6 @@ export function Settings() {
 		return <div>Нет данных для отображения.</div>;
 	}
 
-	if(userRole === "student") {
-		return (
-			<div className={styles["settings"]}>
-				<div className={styles["settings__top"]}>
-					<div className={styles["settings__top-left"]}>
-						<NavLink to={"/"} className={styles["back"]}>
-							<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-								<path d="M10.4603 11.4676L7.27855 7.99553L10.4603 4.52349C10.7801 4.1745 10.7801 3.61074 10.4603 3.26174C10.1405 2.91275 9.62389 2.91275 9.30407 3.26174L5.54006 7.36913C5.22024 7.71812 5.22024 8.28188 5.54006 8.63087L9.30407 12.7383C9.62389 13.0872 10.1405 13.0872 10.4603 12.7383C10.7719 12.3893 10.7801 11.8166 10.4603 11.4676Z" fill="#233566" />
-							</svg>
-							<span>Назад</span>
-						</NavLink>
-						<Headling>Список уроков</Headling>
-					</div>
-				</div>
-				<div className={styles["courses-list__wrap"]}>
-					<Lessons courseId={id || ""} onEditLesson={handleEditLesson} />
-				</div>
-			</div>
-		)
-	}
-
 	return (
 		<>
 		<Vendor className={cn({ [styles.active]: vendorActive })}>
@@ -129,17 +107,15 @@ export function Settings() {
 
 		{isCreatingLesson ? (
 			<NewLessonForm
-				courseId={id || ""}
-				onClose={() => setIsCreatingLesson(false)}
-				onLessonCreated={handleNewLessonCreated}
+			courseId={id || ""}
+			onClose={() => setIsCreatingLesson(false)}
+			onLessonCreated={handleNewLessonCreated}
 			/>
 		) : isEditingLesson ? (
 			<LessonForm
-				lesson={editingLesson}
-				courseId={id || ""}
-				onClose={handleCloseLessonForm}
-				setError={setError}
-				setMessage={setMessage}
+			lesson={editingLesson}
+			courseId={id || ""}
+			onClose={handleCloseLessonForm}
 			/>
 		) : (
 			<div className={styles["settings"]}>

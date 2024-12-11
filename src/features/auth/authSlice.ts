@@ -7,7 +7,7 @@ export interface AuthState {
     token: string | null;
     status: 'idle' | 'loading' | 'succeeded' | 'failed';
     error: string | null;
-	userRole: 'student' | 'school';
+	userRole: 'Пользователь' | 'Админ';
 }
 
 const initialState: AuthState = {
@@ -16,7 +16,7 @@ const initialState: AuthState = {
 	token: localStorage.getItem('token'),
 	status: 'idle',
 	error: null,
-	userRole: 'student'
+	userRole: 'Пользователь'
 };
 
 export interface ApiError {
@@ -37,27 +37,21 @@ export const sendSmsCode = createAsyncThunk(
 );
 
 export const verifySmsCode = createAsyncThunk(
-    'auth/verifySmsCode',
-    async ({ phone, code }: { phone: string; code: string }, { dispatch, rejectWithValue }) => {
-        try {
-            const { token, role } = await verifyCode(phone, code);
-            localStorage.setItem('token', token);
-			localStorage.setItem('role', role);
-            dispatch(setUserRole(role));
-            return token;
-        } catch (error) {
-            const apiError = handleApiError(error);
-            return rejectWithValue(apiError);
-        }
-    }
+	'auth/verifySmsCode',
+	async ({ phone, code }: { phone: string; code: string }, { rejectWithValue  }) => {
+		try {
+			const { token } = await verifyCode(phone, code);
+			localStorage.setItem('token', token);
+			return token;
+		} catch (error: unknown) {
+			// return rejectWithValue ((error as Error).message);
+			if (typeof error === 'object' && error !== null && 'error' in error) {
+                return rejectWithValue(error as ApiError); // Указываем точный тип ошибки
+            }
+            throw new Error('Неизвестная ошибка');
+		}
+	}
 );
-
-function handleApiError(error: unknown): ApiError | string {
-    if (typeof error === 'object' && error !== null && 'error' in error) {
-        return error as ApiError;
-    }
-    return 'Неизвестная ошибка';
-}
 
 const authSlice = createSlice({
 	name: 'auth',
@@ -67,15 +61,11 @@ const authSlice = createSlice({
 			state.isAuthenticated = false;
 			state.isCodeSent = false;
 			state.token = null;
-			state.userRole = 'student';
+			state.userRole = 'Пользователь';
 			state.status = 'idle';
 			state.error = null;
 			localStorage.removeItem('token');
-			localStorage.removeItem('role');
 		},
-		setUserRole: (state, action: PayloadAction<'student' | 'school'>) => {
-			state.userRole = action.payload;
-		}
 	},
 	extraReducers: (builder) => {
 		builder
@@ -107,6 +97,6 @@ const authSlice = createSlice({
 	},
 });
 
-export const { resetAuth, setUserRole } = authSlice.actions;
+export const { resetAuth } = authSlice.actions;
 export default authSlice.reducer;
 

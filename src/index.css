@@ -15,6 +15,16 @@
 		url("./fonts/Raleway/Raleway Medium/Raleway Medium.eot?#iefix") format("embedded-opentype"),
 		url("./fonts/Raleway/Raleway Medium/Raleway Medium.woff") format("woff"),
 		url("./fonts/Raleway/Raleway Medium/Raleway Medium.ttf") format("truetype");
+	font-weight: 400;
+	font-style: normal;
+}
+@font-face {
+	font-family: "Raleway";
+	src: url("./fonts/Raleway/Raleway Medium/Raleway Medium.eot");
+	src:
+		url("./fonts/Raleway/Raleway Medium/Raleway Medium.eot?#iefix") format("embedded-opentype"),
+		url("./fonts/Raleway/Raleway Medium/Raleway Medium.woff") format("woff"),
+		url("./fonts/Raleway/Raleway Medium/Raleway Medium.ttf") format("truetype");
 	font-weight: 500;
 	font-style: normal;
 }
@@ -71,12 +81,12 @@
 	--white-light-hover: #c7d3dd;
 	--primary-color: #0050ff;
 	--primary-color-hover: #0339ad;
+	--dark-blue:#233566;
 	--color-dark-hover: hsl(0, 10%, 40%);
 	--text-color-hover: hsl(0, 10%, 40%);
 	--text-secondary-color: #5b5b5e;
 	--separator-color: #d9d9d9;
 }
-
 @keyframes opacity {
 	from {
 		opacity: 0;
@@ -93,6 +103,7 @@
 
 body {
 	font-family: var(--font-family);
+	color: var(--dark-blue);
 	margin: 0;
 	padding: 0;
 }

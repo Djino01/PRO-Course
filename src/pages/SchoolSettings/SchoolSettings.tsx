@@ -8,43 +8,19 @@ import { NavLink } from "react-router-dom";
 import { updateSchollSettings, getSchoolSettings } from "../../helpers/API";
 
 export const SchoolSettings = () => {
-	const [data, setData] = useState<{
-		name: string;
-		surname: string;
-		email: string;
-		phone: string;
-		image: string | File;
-	}>({
-		name: "",
-		surname: "",
-		email: "",
-		phone: "",
-		image: ""
-	});
 	const [schoolName, setSchoolName] = useState<string>("");
 	const [email, setEmail] = useState<string>("");
 	const [logoPreview, setLogoPreview] = useState<string | null>(null);
 	const [loading, setLoading] = useState<boolean>(true);
-	const userRole = localStorage.getItem("role");
 
 	useEffect(() => {
 		const fetchSettings = async () => {
 			try {
 				setLoading(true);
-				const fetchedData = await getSchoolSettings();
-				if(userRole === "student") {
-					setData({
-						name: fetchedData.name || "",
-						surname: fetchedData.surname || "",
-						email: fetchedData.email || "",
-						phone: fetchedData.phone || "",
-						image: fetchedData.image || "",
-					});
-				} else {
-					setSchoolName(fetchedData.school_name || "");
-					setEmail(fetchedData.email || "");
-					setLogoPreview(fetchedData.image || null);
-				}
+				const data = await getSchoolSettings();
+				setSchoolName(data.school_name || "");
+				setEmail(data.email || "");
+				setLogoPreview(data.image || null);
 			} catch (error) {
 				console.error("Ошибка при загрузке настроек:", error);
 			} finally {
@@ -53,22 +29,12 @@ export const SchoolSettings = () => {
 		};
 	
 		fetchSettings();
-	}, [userRole]);
+	}, []);
 
 	const handleSave = async () => {
 		const formData = new FormData();
-		if(userRole === "student") {
-			formData.append("name", data.name);
-			formData.append("surname", data.surname);
-			formData.append("email", data.email);
-			formData.append("phone", data.phone);
-			if (data.image instanceof File) {
-				formData.append("image", data.image);
-			}
-		} else {
-			formData.append("school_name", schoolName);
-			formData.append("email", email);
-		}
+		formData.append("school_name", schoolName);
+		formData.append("email", email);
 	
 		try {
 			await updateSchollSettings(formData);
@@ -91,97 +57,8 @@ export const SchoolSettings = () => {
 	};
 
 	if (loading) {
-		return <div className={styles['loading']}>
-			<svg xmlns="http://www.w3.org/2000/svg" width="120" height="30" viewBox="0 0 120 30" fill="#0050ff">
-				<circle cx="15" cy="15" r="12">
-					<animate attributeName="r" from="12" to="12" begin="0s" dur="0.8s" values="12;9;12" calcMode="linear" repeatCount="indefinite" />
-					<animate attributeName="fill-opacity" from="1" to="1" begin="0s" dur="0.8s" values="1;.5;1" calcMode="linear" repeatCount="indefinite" />
-				</circle>
-				<circle cx="60" cy="15" r="9" fill-opacity="0.5">
-					<animate attributeName="r" from="9" to="9" begin="0.2s" dur="0.8s" values="9;12;9" calcMode="linear" repeatCount="indefinite" />
-					<animate attributeName="fill-opacity" from="0.5" to="0.5" begin="0.2s" dur="0.8s" values=".5;1;.5" calcMode="linear" repeatCount="indefinite" />
-				</circle>
-				<circle cx="105" cy="15" r="9" fill-opacity="0.5">
-					<animate attributeName="r" from="9" to="9" begin="0.4s" dur="0.8s" values="9;12;9" calcMode="linear" repeatCount="indefinite" />
-					<animate attributeName="fill-opacity" from="0.5" to="0.5" begin="0.4s" dur="0.8s" values=".5;1;.5" calcMode="linear" repeatCount="indefinite" />
-				</circle>
-			</svg>
-		</div>;
+		return <div>Загрузка...</div>;
 	}
-
-	if(userRole === "student") {
-		return (
-			<div className={styles['school-settings']}>
-				<Headling>Настройки пользователя</Headling>
-				<div  className={styles['school-settings__body']}>
-					<div className={styles['school-settings__wrap']}>
-						<div className={styles['school-settings__box']}>
-							<label className={styles['logo']}>
-								<div  className={styles['logo-img']}>
-									{data.image ? (
-										typeof data.image === "string" ? (
-											<img src={data.image} alt="Логотип" />
-										) : (
-											<img src={URL.createObjectURL(data.image)} alt="Превью загруженного изображения" />
-										)
-									) : (
-										<img src="/photo.svg" alt="Логотип" />
-									)}
-								</div>
-								<div className={styles['logo-change']}>
-									<svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-										<path d="M11.2632 1.23386C11.573 0.924049 11.9932 0.75 12.4313 0.75C12.6483 0.75 12.8631 0.79273 13.0635 0.87575C13.264 0.958771 13.4461 1.08046 13.5995 1.23386C13.7529 1.38726 13.8746 1.56937 13.9576 1.7698C14.0406 1.97023 14.0833 2.18505 14.0833 2.40199C14.0833 2.61893 14.0406 2.83375 13.9576 3.03418C13.8746 3.23461 13.7529 3.41672 13.5995 3.57013L4.51788 12.6517C4.09069 13.0789 3.55542 13.382 2.96931 13.5285L0.75 14.0833L1.30483 11.864C1.45136 11.2779 1.75442 10.7426 2.18161 10.3155L11.2632 1.23386Z" stroke="#233566" stroke-opacity="0.4" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" />
-										<path d="M9.08496 3.25L11.585 5.75" stroke="#233566" stroke-opacity="0.4" stroke-width="1.2" stroke-linejoin="round" />
-									</svg>
-									<input 
-										type="file" 
-										accept="image/*"
-										id='logo-upload'
-										onChange={(e) => {
-											const file = e.target.files?.[0];
-											if (file) {
-												if (!["image/jpeg", "image/png", "image/jpg", "image/gif"].includes(file.type)) {
-													alert("Загрузите файл в формате JPEG, PNG, JPG или GIF.");
-													return;
-												}
-												setData({ ...data, image: file });
-											}
-										}}
-										className={styles['logo-field']}
-									/>
-								</div>
-							</label>
-							<InputLabel
-								label="Имя"
-								type="text"
-								id="name"
-								value={data.name}
-								onChange={(valueOrEvent) => handleInputChange(valueOrEvent, (value) => setData({ ...data, name: value}))}
-							/>
-							<InputLabel
-								label="Фамилия"
-								type="text"
-								id="surname"
-								value={data.surname}
-								onChange={(valueOrEvent) => handleInputChange(valueOrEvent, (value) => setData({ ...data, surname: value}))}
-							/>
-							<InputLabel
-								label="Электронная почта"
-								type="text"
-								id="email"
-								value={data.email}
-								onChange={(valueOrEvent) => handleInputChange(valueOrEvent, (value) => setData({ ...data, email: value}))}
-							/>
-						</div>
-					</div>
-				</div>
-				<div className={styles['school-settings__nav']}>
-					<Button appearance="big" onClick={handleSave}>Сохранить</Button>
-					<NavLink className={styles['btn-item']} to={'/'} >Отменить изменения</NavLink>
-				</div>
-			</div>
-		);
-	};
 
 	return (
 		<div className={styles['school-settings']}>
@@ -226,7 +103,18 @@ export const SchoolSettings = () => {
 							value={email}
 							onChange={(valueOrEvent) => handleInputChange(valueOrEvent, setEmail)}
 						/>
+						{/* <InputLabel
+							label="Контактный телефон"
+							type="input"
+							id="phone"
+							mask="+7 (999) 999-99-99"
+							value={phone}
+							onChange={(valueOrEvent) => handleInputChange(valueOrEvent, setPhone)}
+						/> */}
 					</div>
+					{/* <div className={styles['school-settings__box']}>
+						<Button appearance="item">Изменить пароль</Button>
+					</div> */}
 				</div>
 			</div>
 			<div className={styles['school-settings__nav']}>

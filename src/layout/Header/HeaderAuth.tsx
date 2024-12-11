@@ -4,12 +4,10 @@ import cn from 'classnames';
 import { NavLink } from 'react-router-dom';
 import { getSchoolSettings } from "../../helpers/API";
 
-
 function HeaderAuth() {
 	const [schoolName, setSchoolName] = useState<string>("");
 	const [schoolLogo, setSchoolLogo] = useState<string | null>(null);
 	const [loading, setLoading] = useState<boolean>(true);
-	const userRole = localStorage.getItem('role');
 
 	useEffect(() => {
 		const fetchSchoolData = async () => {
@@ -29,7 +27,7 @@ function HeaderAuth() {
 	}, []);
 	
 	if (loading) {
-		return <></>;
+		return <div>Загрузка...</div>;
 	}
 
     return (
@@ -40,19 +38,15 @@ function HeaderAuth() {
 						<div className={styles['logo']}>
 							<img src="/logo.svg" alt="Логотип"/>
 						</div>
-						{userRole !== "student" && (
-							<>
-								<div className={styles['line']}></div>
-								<div className={styles['develop']}>
-									{schoolLogo && 
-										<div className={styles['develop__logo']}>
-											<img src={schoolLogo} alt="Логотип"/>
-										</div>
-									}
-									<div className={styles['develop__caption']}>{schoolName}</div>
+						<div className={styles['line']}></div>
+						<div className={styles['develop']}>
+							{schoolLogo && 
+								<div className={styles['develop__logo']}>
+									<img src={schoolLogo} alt="Логотип"/>
 								</div>
-							</>
-						)}
+							}
+							<div className={styles['develop__caption']}>{schoolName}</div>
+						</div>
 					</div>
 					<div className={styles['header__last']}>
 						{/* <Search className={styles['search']} placeholder='Поиск по платформе' isValid={true}/> */}

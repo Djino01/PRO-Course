@@ -162,9 +162,3 @@
 		gap: 16px;
 	}
 }
-
-.active {
-	top: 100px !important;
-	opacity: 1 !important;
-	visibility: visible !important;
-}
