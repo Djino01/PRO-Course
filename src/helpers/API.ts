@@ -22,7 +22,6 @@ export interface Lesson {
     sort: number | null;
 	updated_at: string;
 	courseId: string;
-	categoryId: number;
 }
 
 export interface LessonCategory {
@@ -34,13 +33,10 @@ export interface LessonCategory {
 
 export type SchoolSettingsProps = {
 	id: number;
-	image?: string | null;
-	school_name?: string;
-	email?: string;
-	role?: string;
-    name?: string;
-    surname?: string;
-    phone?: string;
+	image: string | null;
+	school_name: string;
+	email: string;
+	role: string;
 };
 
 export async function sendSms(phone: string, isAdmin: boolean): Promise<{ success: boolean }> {
@@ -74,7 +70,7 @@ export async function sendSms(phone: string, isAdmin: boolean): Promise<{ succes
 	return await response.json();
 }
 
-export async function verifyCode(phone: string, code: string): Promise<{ token: string; role: 'student' | 'school' }> {
+export async function verifyCode(phone: string, code: string): Promise<{ token: string }> {
 	const sanitizedPhone = phone.replace(/[^\d]/g, '');
     const formattedPhone = sanitizedPhone;
 
@@ -242,6 +238,7 @@ export async function getLessonCategories(coursesId: number): Promise<LessonCate
 	}
 
 	const data = await response.json();
+    console.log('Ответ API getLessonCategories:', data);
     return data;
 }
 
@@ -363,27 +360,3 @@ export async function updateLessonSort(courseId: number, lessonId: number, sort:
 		console.error(`Ошибка обновления урока с ID ${lessonId}:`, error);
 	}
 };
-
-export async function deleteLesson(courseId: number, categoryId: number, lessonId: number): Promise<void> {
-	try {
-		const token = localStorage.getItem("token");
-		if (!token) throw new Error("Токен не найден!");
-
-		const response = await fetch(getApiUrl(`courses/${courseId}/category/${categoryId}/lessons/${lessonId}`), {
-			method: "DELETE",
-			headers: {
-				"Content-Type": "application/json",
-				"Authorization": `Bearer ${token}`,
-			},
-		});
-
-		if (!response.ok) {
-			const errorData = await response.json();
-			throw new Error(errorData.message || "Ошибка удаления урока.");
-		}
-
-		console.log(`Урок с ID ${lessonId} успешно удалён.`);
-	} catch (error) {
-		console.error(`Ошибка удаления урока с ID ${lessonId}:`, error);
-	}
-}

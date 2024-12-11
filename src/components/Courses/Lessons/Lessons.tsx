@@ -12,7 +12,6 @@ interface LessonsProps {
 const Lessons: React.FC<LessonsProps> = ({ courseId, onEditLesson }) => {
 	const [isLoaded, setIsLoaded] = useState(false);
 	const [hasLessons, setHasLessons] = useState(false);
-	const userRole = localStorage.getItem('role');
 
 	const handleLessonsLoaded = (loaded: boolean, lessonsExist: boolean) => {
 		setIsLoaded(loaded);
@@ -30,19 +29,11 @@ const Lessons: React.FC<LessonsProps> = ({ courseId, onEditLesson }) => {
 			{isLoaded && hasLessons && (
 				<div className={styles['lessons__top']}>
 					<div className={styles['lessons__first']}>
-						<div className={cn(styles['lessons__method'], styles['caption'])}>
-							{userRole !== 'student' && (
-								<span>Порядок</span>
-							)}
-						</div>
+						<div className={cn(styles['lessons__method'], styles['caption'])}>Порядок</div>
 						<div className={cn(styles['lessons__title'], styles['caption'])}>Название урока</div>
 					</div>
 					<div className={styles['lessons__last']}>
-						<div className={cn(styles['lessons__date'], styles['caption'])}>
-							{userRole !== 'student' && (
-								<span>Дата изменения</span>
-							)}
-						</div>
+						<div className={cn(styles['lessons__date'], styles['caption'])}>Дата изменения</div>
 					</div>
 				</div>
 			)}
