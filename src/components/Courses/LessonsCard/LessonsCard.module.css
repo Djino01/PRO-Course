@@ -51,11 +51,21 @@
 	object-fit: contain;
 }
 
+.method_center {
+	justify-content: center;
+}
+
 .title {
 	font-weight: 700;
 	font-size: 14px;
 	line-height: 120%;
 	color: #233566;
+}
+button.title {
+	transition: color 0.3s;
+}
+button.title:hover {
+	color: var(--primary-color);
 }
 
 .date {

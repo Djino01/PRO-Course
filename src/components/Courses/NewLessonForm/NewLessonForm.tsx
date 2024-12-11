@@ -5,11 +5,17 @@ import styles from './NewLessonForm.module.css';
 import Button from '../../Button/Button';
 import SlateTextarea from '../../SlateTextarea/SlateTextarea';
 import { createLesson } from '../../../helpers/API';
+import Vendor from "../../Vendor/Vendor";
+import cn from "classnames";
 
 interface NewLessonFormProps {
     courseId: string;
     onClose: () => void;
     onLessonCreated: () => void;
+}
+
+interface ServerErrorResponse {
+    [field: string]: string[];
 }
 
 const NewLessonForm: React.FC<NewLessonFormProps> = ({ courseId, onClose, onLessonCreated }) => {
@@ -18,8 +24,9 @@ const NewLessonForm: React.FC<NewLessonFormProps> = ({ courseId, onClose, onLess
     const [content, setContent] = useState<string>("");
     const [isSaving, setIsSaving] = useState<boolean>(false);
 	const [isPreviewing, setIsPreviewing] = useState<boolean>(false);
-    const [error, setError] = useState<string | null>(null);
-    const [successMessage, setSuccessMessage] = useState<string | null>(null);
+	const [vendorActive, setVendorActive] = useState(false);
+	const [localMessage, setLocalMessage] = useState<string | null>(null);
+	const [localError, setLocalError] = useState<string[] | null>(null);
 
     const handleInputChange = (
         valueOrEvent: string | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -33,31 +40,49 @@ const NewLessonForm: React.FC<NewLessonFormProps> = ({ courseId, onClose, onLess
     };
 
     const handleSave = async () => {
-        if (!title || !content) {
-            setError("Заполните обязательные поля: название урока и контент.");
-            return;
-        }
-
-        setIsSaving(true);
-        setError(null);
-        setSuccessMessage(null);
-
-        try {
-            await createLesson(courseId, {
-                name: title,
-                description,
-                content,
-            });
-
-            setSuccessMessage("Урок успешно создан!");
-            onLessonCreated();
-            setTimeout(onClose, 1500);
-        } catch (err) {
-            setError(err instanceof Error ? err.message : "Неизвестная ошибка.");
-        } finally {
-            setIsSaving(false);
-        }
-    };
+		setIsSaving(true);
+		setLocalError(null);
+		setLocalMessage(null);
+	
+		try {
+			await createLesson(courseId, {
+				name: title,
+				description,
+				content,
+			});
+	
+			setLocalMessage("Урок успешно создан!");
+			setVendorActive(true);
+	
+			setTimeout(() => {
+				setVendorActive(false);
+			}, 1500);
+	
+			onLessonCreated();
+			setTimeout(onClose, 1500);
+		} catch (err) {
+			if (err instanceof Response) {
+				try {
+					const errorData: ServerErrorResponse = await err.json();
+					const errorMessages = Object.entries(errorData)
+						.map(([field, messages]) => `${field}: ${messages.join(", ")}`);
+					setLocalError(errorMessages);
+				} catch {
+					setLocalError(["Не удалось обработать ошибку сервера."]);
+				}
+			} else {
+				setLocalError([err instanceof Error ? err.message : "Неизвестная ошибка."]);
+			}
+	
+			setVendorActive(true);
+	
+			setTimeout(() => {
+				setVendorActive(false);
+			}, 3000);
+		} finally {
+			setIsSaving(false);
+		}
+	};
 
 	if (isPreviewing) {
 		return (
@@ -99,6 +124,16 @@ const NewLessonForm: React.FC<NewLessonFormProps> = ({ courseId, onClose, onLess
 
     return (
         <div className={styles['form']}>
+			<Vendor className={cn({ [styles.active]: vendorActive })}>
+				{localMessage && <div className={styles.message}>{localMessage}</div>}
+				{localError && (
+					<ul className={styles.errorList}>
+						{localError.map((error, index) => (
+							<li key={index}>{error}</li>
+						))}
+					</ul>
+				)}
+			</Vendor>
             <div className={styles['form__top']}>
 				<div className={styles["form__top-box"]}>
 					<button onClick={onClose} className={styles['back']}>
@@ -148,10 +183,6 @@ const NewLessonForm: React.FC<NewLessonFormProps> = ({ courseId, onClose, onLess
                 </div>
             </div>
             <div className={styles['form__bottom']}>
-                {error && <div className={styles["error"]}>{error}</div>}
-                {successMessage && (
-                    <div className={styles["success"]}>{successMessage}</div>
-                )}
                 <Button onClick={handleSave} className={styles['btn']} appearance="big" disabled={isSaving}>
                     {isSaving ? "Сохранение..." : "Создать урок"}
                 </Button>

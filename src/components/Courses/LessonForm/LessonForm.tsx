@@ -11,22 +11,24 @@ interface LessonFormProps {
     lesson: Lesson | null;
     courseId: string;
     onClose: () => void;
+	setError: (message: string | null) => void;
+	setMessage: (message: string | null) => void;
 }
 
-const LessonForm: React.FC<LessonFormProps> = ({ lesson, courseId, onClose }) => {
+const LessonForm: React.FC<LessonFormProps> = ({ lesson, courseId, onClose, setError, setMessage }) => {
     const [title, setTitle] = useState<string>(lesson?.name || "");
     const [description, setDescription] = useState<string>(lesson?.description || "");
     const [content, setContent] = useState<string>(lesson?.content || "");
     const [isSaving, setIsSaving] = useState<boolean>(false);
     const [isPreviewing, setIsPreviewing] = useState<boolean>(false);
-    const [error, setError] = useState<string | null>(null); 
-    const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
     useEffect(() => {
+
         if (lesson) {
             setTitle(lesson.name);
             setDescription(lesson.description === "<p><br></p>" ? "" : lesson.description);
             setContent(lesson.content);
+			console.log("Rendering LessonForm:", lesson);
         }
     }, [lesson]);
 
@@ -50,11 +52,11 @@ const LessonForm: React.FC<LessonFormProps> = ({ lesson, courseId, onClose }) =>
 
         setIsSaving(true);
         setError(null);
-        setSuccessMessage(null);
+        setMessage(null);
 
         try {
             await updateLessonData(courseId, lesson.id, title, cleanedDescription, content);
-            setSuccessMessage("Урок успешно обновлён!");
+            setMessage("Урок успешно обновлён!");
             setTimeout(() => {
                 onClose();
             }, 1500);
@@ -166,8 +168,6 @@ const LessonForm: React.FC<LessonFormProps> = ({ lesson, courseId, onClose }) =>
                 </div>
             </div>
             <div className={styles["form__bottom"]}>
-                {error && <div className={styles["error"]}>{error}</div>}
-                {successMessage && <div className={styles["success"]}>{successMessage}</div>}
                 <Button
                     onClick={handleSave}
                     className={styles["btn"]}

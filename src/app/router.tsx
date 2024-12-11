@@ -11,6 +11,7 @@ import MarketplacesServices from '../pages/Marketplaces/MarketplacesServices/Mar
 import MarketplacesTemplates from '../pages/Marketplaces/MarketplacesTemplates/MarketplacesTemplates';
 import Marketplaces from '../pages/Marketplaces/Marketplaces';
 import { SchoolSettings } from '../pages/SchoolSettings/SchoolSettings';
+import LessonPreview from '../pages/Courses/LessonPreview/LessonPreview';
 
 export const router = createBrowserRouter([
     {
@@ -33,6 +34,10 @@ export const router = createBrowserRouter([
 						path: 'settings/:id',
 						element: <Settings />
 					},
+                    {
+                        path: 'course/:courseId/lesson/:lessonId',
+                        element: <LessonPreview />,
+                    },
 				]
             },
             {

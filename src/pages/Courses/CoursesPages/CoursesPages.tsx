@@ -12,12 +12,14 @@ const CoursesPages = () => {
 	const [loading, setLoading] = useState<boolean>(true);
 	const [error, setError] = useState<string | null>(null);
 
+	const userRole = localStorage.getItem('role');
+
 	useEffect(() => {
 		const fetchCourses = async () => {
 			try {
 				const fetchCourses = await getCourses();
+				console.log('Полученные курсы:', fetchCourses);
 				setCourses(fetchCourses);
-				console.log('Загруженные курсы:', fetchCourses);
 			} catch (error: unknown) {
 				if(error instanceof Error) {
 					setError(error.message);
@@ -30,7 +32,7 @@ const CoursesPages = () => {
 		};
 
 		fetchCourses();
-	}, []);
+	}, [userRole]);
 
 	if(loading) {
 		return <div className={styles['loading']}>
@@ -58,7 +60,15 @@ const CoursesPages = () => {
 	return(
 		<div className={styles['courses-list']}>
 			<Headling appearance='big'>Список курсов</Headling>
-			{courses.length > 0 ? (
+			{userRole  === 'student' ? (
+				courses.length > 0 ? (
+					<CoursesList courses={courses} setCourses={setCourses} />
+				) : (
+					<div className={styles['no-courses']}>
+						<p>Курсов нет!</p>
+					</div>
+				)
+			) : courses.length > 0 ? (
 				<CoursesList courses={courses} setCourses={setCourses} />
 			) : (
 				<CoursesCard
@@ -75,7 +85,7 @@ const CoursesPages = () => {
 				/>
 			)}
 		</div>
-	)
+	);
 }
 
 export default CoursesPages;

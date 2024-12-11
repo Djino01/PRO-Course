@@ -20,6 +20,7 @@ const CoursesList: React.FC<CorsesListProps> = ({ courses, setCourses }) => {
 	const [vendorActive, setVendorActive] = useState(false);
 	const [message, setMessage] = useState<string | null>(null);
 	const [error, setError] = useState<string | null>(null);
+	const userRole = localStorage.getItem('role');
 
 	useEffect(() => {
         if (message || error) {
@@ -73,14 +74,16 @@ const CoursesList: React.FC<CorsesListProps> = ({ courses, setCourses }) => {
             </Vendor>
 			
 			<div className={styles["courses-list"]}>
-				<div className={styles["courses-list__top"]}>
-					<Tabs
-						tabs={["Текущие", "Архивные"]}
-						activeTab={activeTab}
-						onTabClick={handleTabClick}
-					/>
-					<Button appearance="big" onClick={() => setIsModalOpen(true)}>Создать курс</Button>
-				</div>
+				{userRole !== "student" && (
+					<div className={styles["courses-list__top"]}>
+						<Tabs
+							tabs={["Текущие", "Архивные"]}
+							activeTab={activeTab}
+							onTabClick={handleTabClick}
+						/>
+						<Button appearance="big" onClick={() => setIsModalOpen(true)}>Создать курс</Button>
+					</div>
+				)}
 				<div className={styles["courses-list__content"]}>
 					{filteredCourses.map((course) => (
                         <CourseAccordion 
@@ -91,11 +94,13 @@ const CoursesList: React.FC<CorsesListProps> = ({ courses, setCourses }) => {
                         /> 
                     ))}
 				</div>
-				<CourseModal
-					isOpen={isModalOpen}
-					onClose={() => setIsModalOpen(false)}
-					setCourses={setCourses}
-				/>
+				{userRole !== "student" && (
+					<CourseModal
+						isOpen={isModalOpen}
+						onClose={() => setIsModalOpen(false)}
+						setCourses={setCourses}
+					/>
+				)}
 			</div>
 		</div>
 	);
